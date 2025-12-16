@@ -37,7 +37,7 @@
     <h2>موجودی کالاها</h2>
     <table>
       <thead>
-        <tr><th>نام</th><th>موجودی</th><th>قیمت</th><th>فروش</th></tr>
+        <tr><th>نام</th><th>موجودی</th><th>قیمت</th><th>فروش</th><th>حذف</th></tr>
       </thead>
       <tbody id="products"></tbody>
     </table>
@@ -47,7 +47,7 @@
     <h2>سفارش‌ها / فروش‌ها</h2>
     <table>
       <thead>
-        <tr><th>کالا</th><th>تعداد</th><th>جمع</th><th>تاریخ</th></tr>
+        <tr><th>کالا</th><th>تعداد</th><th>جمع</th><th>نوع</th><th>تاریخ</th></tr>
       </thead>
       <tbody id="orders"></tbody>
     </table>
@@ -93,7 +93,25 @@
     orders.push({
       name: products[index].name,
       price: products[index].price,
-      date: new Date().toLocaleString('fa-IR')
+      date: new Date().toLocaleString('fa-IR'),
+      type: 'فروش'
+    });
+
+    setData('products', products);
+    setData('orders', orders);
+    render();
+  }
+
+  function removeProduct(index) {
+    const products = getData('products');
+    const removed = products.splice(index, 1)[0];
+
+    const orders = getData('orders');
+    orders.push({
+      name: removed.name,
+      price: 0,
+      date: new Date().toLocaleString('fa-IR'),
+      type: 'حذف محصول'
     });
 
     setData('products', products);
@@ -111,6 +129,7 @@
           <td>${p.qty}</td>
           <td>${p.price}</td>
           <td><button onclick="sell(${i})">فروش</button></td>
+          <td><button onclick="removeProduct(${i})">حذف</button></td>
         </tr>`;
     });
 
@@ -122,6 +141,7 @@
           <td>${o.name}</td>
           <td>1</td>
           <td>${o.price}</td>
+          <td>${o.type}</td>
           <td>${o.date}</td>
         </tr>`;
     });
@@ -133,3 +153,4 @@
 
 </body>
 </html>
+
