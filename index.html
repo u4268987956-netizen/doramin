@@ -35,6 +35,7 @@
 
   <div class="card">
     <h2>موجودی کالاها</h2>
+    <button onclick="clearProducts()">حذف کل کالاها</button>
     <table>
       <thead>
         <tr><th>نام</th><th>موجودی</th><th>قیمت</th><th>فروش</th><th>حذف</th></tr>
@@ -45,9 +46,10 @@
 
   <div class="card">
     <h2>سفارش‌ها / فروش‌ها</h2>
+    <button onclick="clearOrders()">حذف کل تاریخچه سفارش‌ها</button>
     <table>
       <thead>
-        <tr><th>کالا</th><th>تعداد</th><th>جمع</th><th>نوع</th><th>تاریخ</th></tr>
+        <tr><th>کالا</th><th>تعداد</th><th>جمع</th><th>نوع</th><th>تاریخ</th><th>حذف</th></tr>
       </thead>
       <tbody id="orders"></tbody>
     </table>
@@ -135,7 +137,7 @@
 
     const orders = getData('orders');
     ordersEl.innerHTML = '';
-    orders.forEach(o => {
+    orders.forEach((o,i) => {
       ordersEl.innerHTML += `
         <tr>
           <td>${o.name}</td>
@@ -143,14 +145,35 @@
           <td>${o.price}</td>
           <td>${o.type}</td>
           <td>${o.date}</td>
+          <td><button onclick="removeOrder(${i})">حذف</button></td>
         </tr>`;
     });
   }
 
   const productsEl = document.getElementById('products');
   const ordersEl = document.getElementById('orders');
+
+  function removeOrder(index) {
+    const orders = getData('orders');
+    orders.splice(index,1);
+    setData('orders', orders);
+    render();
+  }
+
+  function clearOrders() {
+    if(confirm('کل تاریخچه سفارش‌ها حذف شود؟')){
+      localStorage.removeItem('orders');
+      render();
+    }
+  }
+
+  function clearProducts() {
+    if(confirm('کل کالاها و تاریخچه مربوطه حذف شود؟')){
+      localStorage.removeItem('products');
+      render();
+    }
+  }
 </script>
 
 </body>
 </html>
-
