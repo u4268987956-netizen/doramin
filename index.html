@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>داشبورد فروشگاه</title>
+  <style>
+    body { font-family: sans-serif; background:#f5f5f5; margin:0; padding:20px; }
+    .card { background:#fff; padding:20px; border-radius:12px; margin-bottom:20px; box-shadow:0 4px 10px rgba(0,0,0,.08); }
+    h2 { margin-top:0 }
+    input, button { padding:8px; margin:4px 0; }
+    button { cursor:pointer }
+    table { width:100%; border-collapse:collapse; margin-top:10px; }
+    th, td { border-bottom:1px solid #ddd; padding:8px; text-align:center; }
+    .hidden { display:none }
+  </style>
+</head>
+<body>
+
+<div id="login" class="card">
+  <h2>ورود</h2>
+  <input id="password" type="password" placeholder="رمز عبور" />
+  <br />
+  <button onclick="login()">ورود</button>
+</div>
+
+<div id="app" class="hidden">
+
+  <div class="card">
+    <h2>افزودن کالا</h2>
+    <input id="pname" placeholder="نام کالا" />
+    <input id="pqty" type="number" placeholder="موجودی" />
+    <input id="pprice" type="number" placeholder="قیمت" />
+    <button onclick="addProduct()">ثبت</button>
+  </div>
+
+  <div class="card">
+    <h2>موجودی کالاها</h2>
+    <table>
+      <thead>
+        <tr><th>نام</th><th>موجودی</th><th>قیمت</th><th>فروش</th></tr>
+      </thead>
+      <tbody id="products"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>سفارش‌ها / فروش‌ها</h2>
+    <table>
+      <thead>
+        <tr><th>کالا</th><th>تعداد</th><th>جمع</th><th>تاریخ</th></tr>
+      </thead>
+      <tbody id="orders"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+  const PASSWORD = "1234"; // تغییر بده
+
+  function login() {
+    if (document.getElementById('password').value === PASSWORD) {
+      document.getElementById('login').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+      render();
+    } else alert('رمز اشتباه است');
+  }
+
+  function getData(key) {
+    return JSON.parse(localStorage.getItem(key) || '[]');
+  }
+  function setData(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+  }
+
+  function addProduct() {
+    const products = getData('products');
+    products.push({
+      name: pname.value,
+      qty: Number(pqty.value),
+      price: Number(pprice.value)
+    });
+    setData('products', products);
+    render();
+  }
+
+  function sell(index) {
+    const products = getData('products');
+    if (products[index].qty <= 0) return alert('موجودی تمام شده');
+    products[index].qty--;
+
+    const orders = getData('orders');
+    orders.push({
+      name: products[index].name,
+      price: products[index].price,
+      date: new Date().toLocaleString('fa-IR')
+    });
+
+    setData('products', products);
+    setData('orders', orders);
+    render();
+  }
+
+  function render() {
+    const products = getData('products');
+    productsEl.innerHTML = '';
+    products.forEach((p, i) => {
+      productsEl.innerHTML += `
+        <tr>
+          <td>${p.name}</td>
+          <td>${p.qty}</td>
+          <td>${p.price}</td>
+          <td><button onclick="sell(${i})">فروش</button></td>
+        </tr>`;
+    });
+
+    const orders = getData('orders');
+    ordersEl.innerHTML = '';
+    orders.forEach(o => {
+      ordersEl.innerHTML += `
+        <tr>
+          <td>${o.name}</td>
+          <td>1</td>
+          <td>${o.price}</td>
+          <td>${o.date}</td>
+        </tr>`;
+    });
+  }
+
+  const productsEl = document.getElementById('products');
+  const ordersEl = document.getElementById('orders');
+</script>
+
+</body>
+</html>
